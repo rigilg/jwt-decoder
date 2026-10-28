@@ -1,0 +1,1 @@
+{"name":"jwt-decoder","private":true,"type":"module","scripts":{"test":"node --test","build":"node --test"}}
