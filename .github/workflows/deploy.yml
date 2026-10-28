@@ -3,13 +3,6 @@ on:
   push:
     branches: [main]
   pull_request:
-  workflow_dispatch:
-    inputs:
-      approve_deployment:
-        description: 'I approve deploying main to jwt.rigilgilbert.com'
-        required: true
-        type: boolean
-        default: false
 permissions:
   contents: read
 concurrency:
@@ -25,12 +18,7 @@ jobs:
           node-version: 22
       - run: npm test
   deploy:
-    if: >-
-      github.event_name == 'workflow_dispatch' &&
-      github.ref == 'refs/heads/main' &&
-      inputs.approve_deployment == true &&
-      github.actor == 'rigilg' &&
-      github.triggering_actor == 'rigilg'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: test
     runs-on: ubuntu-latest
     environment:
