@@ -1,19 +1,62 @@
 # JWT Decoder
 
-Browser-local JWT decoder for https://jwt.rigilgilbert.com.
+A lightweight tool for inspecting JSON Web Tokens directly in your browser.
 
-Static HTML, CSS and JavaScript. No application dependencies, backend, analytics, local storage or token uploads. Decodes JWT/JWS headers and payloads, accepts a Bearer prefix, displays NumericDate claims, and rejects JWE encrypted tokens. Decoding does not verify the signature or validate trust.
+**[Open JWT Decoder](https://jwt.rigilgilbert.com)**
 
-## Development
+## Features
 
-Use Node.js 22 or newer. Run `npm test`. Serve `dist/` with any static HTTP server.
+- Decode JWT headers and payloads into readable, formatted JSON.
+- Accept a raw token or a token prefixed with `Bearer `.
+- Decode UTF-8 claims, including Unicode characters.
+- Display issued-at (`iat`), not-before (`nbf`), and expiration (`exp`) timestamps.
+- Show expiration and not-yet-active indicators.
+- Copy decoded header or payload JSON.
+- Try a generated example token or clear the input.
+- Use a responsive interface on desktop and mobile.
 
-## Hosting and continuous deployment
+## Usage
 
-Cloudflare Pages project: `rigil-jwt`; production branch: `main`; published directory: `dist`.
+1. Open the site and paste a JWT into **Encoded token**.
+2. Inspect the decoded header, payload, and any timestamp details.
+3. Use **Copy JSON** to copy the header or payload.
 
-The GitHub Actions workflow tests every push to main and every pull request. Pull requests run tests only. Every push to main, including a merged pull request, deploys automatically after tests pass. Rigil reviews each pull request in GitHub and personally clicks Merge when ready. That merge is the approval step for this solo workflow; a separate approving review is not required. Agents must work on feature branches, open pull requests and leave merging to Rigil. Main requires a pull request, passing tests and an up-to-date branch, with no administrator bypass. Direct pushes, force pushes and deletion of main are prohibited. Auto-merge stays disabled. CODEOWNERS identifies @rigilg without requiring self-review. Set the repository Actions secret `CLOUDFLARE_API_TOKEN` to a Cloudflare token scoped to this account with Account / Cloudflare Pages / Edit permission. The account ID is already configured in the workflow. Do not commit credentials.
+The contents update as you type. **Try an example** provides sample data without requiring a real token.
 
-At Porkbun, create a CNAME record: host `jwt`, answer `rigil-jwt.pages.dev`. The custom domain is registered with Cloudflare Pages; HTTPS activates after DNS validation.
+## Privacy and limitations
 
-An initial deployment can be performed with `npx wrangler@4 pages deploy dist --project-name=rigil-jwt --branch=main` using the same account and token environment variables.
+Token decoding happens on your device. The application does not upload tokens, store them in browser storage, or use analytics. Clipboard copying happens only when you select a copy button.
+
+**Decoding does not verify a signature or establish trust.** The tool does not authenticate users, validate issuers or audiences, or determine whether a server will accept a token. Expiration indicators are informational and depend on your device's clock.
+
+Supported tokens have three dot-separated JWT/JWS parts and JSON-object headers and payloads. Encrypted JWE tokens cannot be decoded by this tool. Unsigned tokens can be inspected, but their contents are not verified.
+
+## Local development
+
+Requires Node.js 22 or newer for tests. The application has no runtime dependencies or build step.
+
+```sh
+npm test
+```
+
+Serve the `dist/` directory with any static HTTP server, then open the local address in your browser. An HTTP localhost or HTTPS origin supports browser features such as module loading and clipboard access; clipboard availability also depends on browser permissions.
+
+## Project structure
+
+| Path | Purpose |
+| --- | --- |
+| `dist/index.html` | Page structure |
+| `dist/style.css` | Responsive styling |
+| `dist/decode.js` | JWT parsing and input validation |
+| `dist/app.js` | Interface, timestamp display, and clipboard actions |
+| `dist/_headers` | Hosting security headers |
+| `tests/decode.test.js` | Decoder tests |
+| `.github/workflows/deploy.yml` | Test and deployment workflow |
+
+## Contributing and releases
+
+Propose changes through a pull request. Tests must pass before merging, and the maintainer reviews and manually merges changes in GitHub. Direct pushes to `main` and automatic merging are disabled.
+
+Pull requests run tests only. After an approved change is merged into `main`, the workflow tests it again and deploys the site automatically. Deployment credentials are managed through encrypted repository secrets and must never be committed.
+
+See [AGENTS.md](AGENTS.md) for instructions for coding agents.
